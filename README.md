@@ -154,7 +154,11 @@ be used to separate statements within a `do` block just like in Haskell.
 
 ### Built-in functions (builtins)
 
+---
+
 #### 1-byte built-in functions
+
+---
 
 `⊛`
 ===
@@ -598,7 +602,11 @@ Equivalent of `Data.Foldable.foldr` in Haskell.
 
 Equivalent of `Data.List.permutations` in Haskell.
 
+---
+
 #### 2-byte built-in functions
+
+---
 
 `≫=`
 ====
