@@ -1,6 +1,6 @@
 Dec | Hex | Chr | Notes
 --- | --- | --- | -----
-0   | 0   | 𝐓   | `True`
+0   | 0   | ⊛   | `<*>`
 1   | 1   | →   | `->`
 2   | 2   | ←   | `<-`
 3   | 3   | ≡   | `==`
@@ -10,7 +10,7 @@ Dec | Hex | Chr | Notes
 7   | 7   | ⩖   | splits a list at every occurence of another list of the same type
 8   | 8   | ⤔   | `mapM`
 9   | 9   | ∈   | `elem`
-10  | A   | ⊛   | `<*>`
+10  | A   | LF  | the normal ASCII "linefeed" character (`\n`)
 11  | B   | ⁂   | `***`
 12  | C   | ⅋   | `&&&`
 13  | D   | ≫   | `>>`
@@ -19,8 +19,8 @@ Dec | Hex | Chr | Notes
 16  | 10  | ∪   | `union`
 17  | 11  | Σ   | `sum`
 18  | 12  | ↵   | `<$>`
-19  | 13  | ⫩   | `span`
-20  | 14  | ¦   | `[x^2¦x←[1⋯]]`; also used inside of `⟨ ⟩`
+19  | 13  | ⊢   | `partition`
+20  | 14  | ¦   | `[x^2¦x←[1..]]`; also used inside of `⟨ ⟩`
 21  | 15  | ∀   | `all`
 22  | 16  | ∃   | `any`
 23  | 17  | ⟨   | used for equivalent of `case`: `⟨x¦y:z→foo x¦[]→0⟩`
