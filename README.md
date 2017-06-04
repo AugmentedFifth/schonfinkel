@@ -62,13 +62,13 @@ Variables are still bound using `=`, but instead of `let ... in ...` or
 `... where ...`, Schönfinkel uses curly brackets (`{}`) and separates bindings
 using commas (`,`). As an example, the following Schönfinkel code:
 
-```
+```haskell
 {x=3,y=1.5}x/y
 ```
 
 ...is identical to the following Haskell code:
 
-```
+```haskell
 let x = 3
     y = 1.5
 in  x / y
@@ -85,7 +85,7 @@ avoid ambiguity, Schönfinkel uses a special character (`¦`) for the vertical
 pipe character found in all list comprehensions (and additionally in `case`
 expressions, as will be seen later). For example,
 
-```
+```haskell
 v=[(-1, 8), (-1, 3), (23, 1), (1, 1)]
 
 [|i>j→-2|i<j→1|→0¦(i,j)←v]
@@ -93,7 +93,7 @@ v=[(-1, 8), (-1, 3), (23, 1), (1, 1)]
 
 yields the list `[1, 1, -2, 0]`. The equivalent Haskell is:
 
-```
+```haskell
 v=[(-1, 8), (-1, 3), (23, 1), (1, 1)]
 
 [if i > j then -2 else if i < j then 1 else 0 | (i,j) <- v]
@@ -113,13 +113,13 @@ Ranges work essentially the same as in Haskell, with one small change.
 Descending ranges that don't use comma(s) work as expected in Schönfinkel. That
 is,
 
-```
+```haskell
 [10..1]
 ```
 
 is the same as the following Haskell:
 
-```
+```haskell
 [10,9..1]
 ```
 
@@ -128,7 +128,7 @@ is the same as the following Haskell:
 Schönfinkel uses a shortened form of `case` expressions that otherwise work the
 same way as their Haskell counterparts. The following Haskell:
 
-```
+```haskell
 f x =
     case x of
         0 -> 18
@@ -139,7 +139,7 @@ f x =
 
 can be translated directly into Schönfinkel as:
 
-```
+```haskell
 f x=⟨x¦0→18¦1→15¦2→12¦→12+x⟩
 ```
 
