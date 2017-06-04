@@ -769,6 +769,13 @@ Equivalent of `Control.Arrow.arr` in Haskell.
 
 Mnemonic: **AR**row
 
+`BR`
+====
+
+Equivalent of `Data.List.break` in Haskell.
+
+Mnemonic: **BR**eak
+
 `CG`
 ====
 
@@ -790,12 +797,19 @@ Equivalent of `Prelude.cos` in Haskell.
 
 Mnemonic: **CO**sine
 
-`CY`
+`CR`
 ====
 
 Equivalent of `Data.Tuple.curry` in Haskell.
 
-Mnemonic: **C**urr**Y**
+Mnemonic: **C**u**R**ry
+
+`CY`
+====
+
+Equivalent of `Data.List.cycle` in Haskell.
+
+Mnemonic: **CY**cle
 
 `DR`
 ====
@@ -803,6 +817,20 @@ Mnemonic: **C**urr**Y**
 Equivalent of `Data.List.genericDrop` in Haskell.
 
 Mnemonic: generic**DR**op
+
+`DW`
+====
+
+Equivalent of `Data.List.dropWhile` in Haskell.
+
+Mnemonic: **D**rop**W**hile
+
+`ER`
+====
+
+Equivalent of `Prelude.error` in Haskell.
+
+Mnemonic: **ER**ror
 
 `EV`
 ====
@@ -914,6 +942,13 @@ Equivalent of `Data.Tuple.fst` in Haskell.
 
 Mnemonic: **F**irs**T**
 
+`GC`
+====
+
+Equivalent of `System.IO.getChar` in Haskell.
+
+Mnemonic: **G**et**C**haracter
+
 `GD`
 ====
 
@@ -921,12 +956,40 @@ Equivalent of `Prelude.gcd` in Haskell.
 
 Mnemonic: **G**reatest common **D**ivisor
 
+`GL`
+====
+
+Equivalent of `System.IO.getLine` in Haskell.
+
+Mnemonic: **G**et**L**ine
+
+`IE`
+====
+
+Equivalent of `Data.List.iterate` in Haskell.
+
+Mnemonic: **I**t**E**rate
+
+`IJ`
+====
+
+Equivalent of `Data.Maybe.isJust` in Haskell.
+
+Mnemonic: **I**s**J**ust
+
 `IN`
+====
+
+Equivalent of `Data.Maybe.isNothing` in Haskell.
+
+Mnemonic: **I**s**N**othing
+
+`IR`
 ====
 
 Equivalent of `System.IO.interact` in Haskell.
 
-Mnemonic: **IN**teract
+Mnemonic: **I**nte**R**act
 
 `LA`
 ====
@@ -956,6 +1019,32 @@ Equivalent of `Prelude.lcm` in Haskell.
 
 Mnemonic: **L**east common **M**ultiple
 
+`LU`
+====
+
+Equivalent of `Data.List.lookup` in Haskell.
+
+Mnemonic: **L**ook**U**p
+
+`LV`
+====
+
+Unsafe version of `Data.List.lookup`. Returns `undefined` if no value is found.
+
+Mnemonic: **L**ook**U+1=V**p
+
+Haskell implementation of this function:
+
+```haskell
+import Data.List
+
+LV :: Eq a => a -> [(a, b)] -> b
+LV k m =
+    case lookup k m of
+        Just b -> b
+        _      -> undefined
+```
+
 `MI`
 ====
 
@@ -971,6 +1060,13 @@ Haskell implementation of this function:
 MI :: Integral i => (a -> i -> b) -> [a] -> [b]
 MI f xs = zipWith f xs [0..]
 ```
+
+`NE`
+====
+
+Equivalent of `Data.Foldable.notElem` in Haskell.
+
+Mnemonic: **N**ot**E**lem
 
 `OD`
 ====
@@ -998,7 +1094,14 @@ Mnemonic: **PR**edecessor
 
 Equivalent of `System.IO.putStrLn` in Haskell.
 
-Mnemonic: **P**ut**S**trln
+Mnemonic: **P**ut **S**tring line
+
+`PT`
+====
+
+Equivalent of `System.IO.putStr` in Haskell.
+
+Mnemonic: **P**ut s**T**ring line
 
 `QT`
 ====
@@ -1007,12 +1110,33 @@ Equivalent of `Prelude.quot` in Haskell.
 
 Mnemonic: **Q**uo**T**ient
 
+`RC`
+====
+
+Equivalent of `Data.List.genericReplicate` in Haskell.
+
+Mnemonic: **R**epli**C**ate
+
+`RF`
+====
+
+Equivalent of `System.IO.readFile` in Haskell.
+
+Mnemonic: **R**ead**F**ile
+
 `RM`
 ====
 
 Equivalent of `Prelude.rem` in Haskell.
 
 Mnemonic: **R**e**M**ainder
+
+`RP`
+====
+
+Equivalent of `Data.List.repeat` in Haskell.
+
+Mnemonic: **R**e**P**eat
 
 `RT`
 ====
@@ -1041,6 +1165,20 @@ Mnemonic: **SI**ne
 Equivalent of `Data.List.scanl1` in Haskell.
 
 Mnemonic: **S**can**L**eft1
+
+`SN`
+====
+
+Equivalent of `Data.List.span` in Haskell.
+
+Mnemonic: **S**pa**N**
+
+`SP`
+====
+
+Equivalent of `Data.List.genericSplitAt` in Haskell.
+
+Mnemonic: generic **SP**lit at
 
 `SQ`
 ====
@@ -1119,9 +1257,44 @@ Equivalent of `Data.String.unwords` in Haskell.
 
 Mnemonic: **U**n**W**ords
 
+`UZ`
+====
+
+Equivalent of `Data.List.unzip` in Haskell.
+
+Mnemonic: **U**n**Z**ip
+
+`WF`
+====
+
+Equivalent of `System.IO.writeFile` in Haskell.
+
+Mnemonic: **W**rite**F**ile
+
 `WO`
 ====
 
 Equivalent of `Data.String.words` in Haskell.
 
 Mnemonic: **WO**rds
+
+`ZT`
+====
+
+Equivalent of `Data.List.zip3` in Haskell.
+
+Mnemonic: **Z**ip **T**hree
+
+`ZU`
+====
+
+Equivalent of `Data.List.unzip3` in Haskell.
+
+Mnemonic: **u**n**Z**ip **T+1=U**hree
+
+`ZW`
+====
+
+Equivalent of `Data.List.zipWith3` in Haskell.
+
+Mnemonic: **Z**ip**W**ith3
