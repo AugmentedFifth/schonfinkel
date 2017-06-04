@@ -101,7 +101,7 @@ v=[(-1, 8), (-1, 3), (23, 1), (1, 1)]
 ```
 
 As you can see, omitting the condition (`|→`) always matches; it's the same as
-matching on `True` (`|True->`), or, in Schönfinkel, `|𝐓→`.
+matching on `True` (`|True->`).
 
 It's common to get away with not using the `&&` function when logical AND is
 needed. Instead, guards and multi-way "if"s like the one above can have multiple
@@ -680,3 +680,46 @@ Unchanged from Haskell.
 ====
 
 Unchanged from Haskell.
+
+`<=`
+====
+
+Unchanged from Haskell.
+
+`<$`
+====
+
+Equivalent of `Control.Applicative.<$` in Haskell.
+
+Infix?: yes.
+
+`<*`
+====
+
+Equivalent of `Control.Applicative.<*` in Haskell.
+
+Infix?: yes.
+
+`>=`
+====
+
+Unchanged from Haskell.
+
+`^^`
+====
+
+Unchanged from Haskell.
+
+`^≫`
+====
+
+Equivalent of `Control.Arrow.^>>` in Haskell.
+
+Infix?: yes.
+
+`^≪`
+====
+
+Equivalent of `Control.Arrow.^<<` in Haskell.
+
+Infix?: yes.
