@@ -31,13 +31,12 @@ the full codepage listed in an easy-to-read format, see "codepage.md".
 #### Identifiers
 
 One quirk of Schönfinkel is that all identifiers used by the programmer (i.e.,
-are not pre-defined) must consist *solely* of lowercase letters optionally
-followed by one or more single quotes (i.e., must match the regex `[a-z]+'*`).
-The only exception to this rule is programmer-defined infix functions.
-Characters in the range `[A-Z]` are reserved for builtins. Underscores (`_`)
-have only one meaning in Schönfinkel, namely, empty patterns/throwaway
-variables. Characters in the range `[0-9]` are reserved for numeric literals
-exclusively.
+are not pre-defined) must consist *solely* of lowercase letters (i.e., must
+match the regex `[a-z]+`). The only exception to this rule is programmer-defined
+infix functions. Characters in the range `[A-Z]` are reserved for builtins.
+Underscores (`_`) have only one meaning in Schönfinkel, namely, empty
+patterns/throwaway variables. Characters in the range `[0-9]` are reserved for
+numeric literals exclusively.
 
 Additionally, the first 5 lowercase letters as a single identifier (`a`, `b`,
 `c`, `d`, `e`) are identifiers reserved for implicit input/command-line
@@ -189,6 +188,22 @@ of the word `do`, the `⟥` character is used instead. This saves the programmer
 from having to write the `o` and the whitespace(s) after it. Additionally, as
 mentioned before, monadic bindings use `←` instead of `<-`. Semicolons (`;`) can
 be used to separate statements within a `do` block just like in Haskell.
+
+### Further notes on syntax
+
+#### Comments
+
+Comments are the same style as Haskell; more precisely, a block comment matches
+
+```javascript
+/{-.*-}/m
+```
+
+(where `m` means multi-line match). A line comment, then, matches:
+
+```javascript
+/--[^\n]*/m
+```
 
 ### Built-in functions (builtins)
 
@@ -1290,7 +1305,7 @@ Mnemonic: **Z**ip **T**hree
 
 Equivalent of `Data.List.unzip3` in Haskell.
 
-Mnemonic: **u**n**Z**ip **T+1=U**hree
+Mnemonic: un**Z**ip **T+1=U**hree
 
 `ZW`
 ====
