@@ -167,11 +167,66 @@ const upperIdMappings = {
     "ZW": "L.zipWith3"
 };
 
+const definitions = {
+    "&!&!&": [`\
+infixl 9 &!&!&
+(&!&!&) :: P.Eq a => [a] -> [a] -> [[a]]
+(&!&!&) l n =
+    P.fst P.$ P.until (\\(_, l') -> P.null l') (\\(accu, rest) ->
+        if L.genericTake needleLen rest P.== n then
+            (accu P.++ [[]], L.genericDrop needleLen rest)
+        else
+            (L.init accu P.++ [P.last accu P.++ [P.head rest]], P.tail rest)) ([[]], l)
+    where needleLen = L.genericLength n`, "L"],
+
+    "!>^<!": [`\
+infixl 7 !>^<!
+(!>^<!) :: [a] -> [b] -> [(a, b)]
+(!>^<!) xs ys = [(x, y) | x <- xs, y <- ys]`],
+
+    "+:+:+": [`\
+infixr 5 +:+:+
+(+:+:+) :: [a] -> a -> [a]
+(+:+:+) l a = l P.++ [a]`],
+
+    "subIndex": [`\
+subIndex :: P.Integral i => i -> a -> [a] -> [a]
+subIndex i a (b:bs)
+    | i P.< 0     = subIndex (L.genericLength bs P.+ i P.+ 1) a (b P.: bs)
+    | i P.== 0    = a P.: bs
+    | P.otherwise = b P.: subIndex (i P.- 1) a bs`, "L"],
+
+    "unsafeFind": [`\
+unsafeFind :: (a -> P.Bool) -> [a] -> a
+unsafeFind p l =
+    case L.find p l of
+        P.Just a -> a
+        _        -> P.undefined`, "L"],
+
+    "findIndex1": [`\
+findIndex1 :: (a -> P.Bool) -> [a] -> P.Int
+findIndex1 p l =
+    case L.findIndex p l of
+        P.Just i -> i
+        _        -> -1`, "L"],
+
+    "unsafeLookup": [`\
+unsafeLookup :: P.Eq a => a -> [(a, b)] -> b
+unsafeLookup k m =
+    case L.lookup k m of
+        P.Just b -> b
+        _        -> P.undefined`, "L"],
+
+    "mapWithIndices": [`\
+mapWithIndices :: P.Integral i => (a -> i -> b) -> [a] -> [b]
+mapWithIndices f xs = P.zipWith f xs [0..]`]
+};
+
 /* Ordered by precedence */
 const lineFeed = /^\n+/;
 const charLiteral = /^'[^\n]'/;
-const strLiteral = /^"[^\n]*"/;
-const blockComment = /^{-.*-}/;
+const strLiteral = /^"[^\n]*?"/;
+const blockComment = /^{-.*?-}/;
 const lineComment = /^--[^\n]*/;
 const spacing = /^ +/;
 const rightArr = /^→/;
@@ -294,7 +349,18 @@ const unicode = (() => {
     }
 })();
 
-const input = fs.readFileSync(inputFile, unicode ? "utf8" : undefined);
+const input = (() => {
+    try {
+        return fs.readFileSync(inputFile, unicode ? "utf8" : undefined);
+    } catch (e) {
+        if (e.code === "ENOENT") {
+            console.log("There's no such file " + inputFile);
+            process.exit(1);
+        } else {
+            throw e;
+        }
+    }
+})();
 
 let code =
     unicode ?
@@ -345,21 +411,19 @@ if (tokens[tokens.length - 1].length < 1) {
 
 /* Hacky parsing directly into Haskell */
 
-let out = `\
-import qualified Control.Monad       as M
-import qualified Control.Applicative as App
-import qualified Control.Arrow       as Arr
+const imports = {
+    "M":   "import qualified Control.Monad       as M",
+    "App": "import qualified Control.Applicative as App",
+    "Arr": "import qualified Control.Arrow       as Arr",
+    "F":   "import qualified Data.Foldable       as F",
+    "L":   "import qualified Data.List           as L",
+    "May": "import qualified Data.Maybe          as May",
+    "O":   "import qualified Data.Ord            as O"
+};
 
-import qualified Data.Foldable       as F
-import qualified Data.List           as L
-import qualified Data.Maybe          as May
-import qualified Data.Ord            as O
-
-import qualified Prelude             as P
-
-
-`;
-const calls = [];
+let out = "import qualified Prelude             as P\n\n";
+const lineArray = [];
+const calls = new Set();
 const nakeds = [];
 function makeId(i) {
     return (i >= 26 ? makeId((i / 26 >> 0) - 1) : "") +
@@ -549,14 +613,14 @@ tokens.forEach(l => {
         } else if (specialFn.test(token)) {
             const callName = specialFnMappings[token];
             line += callName + " ";
-            calls.push(callName);
+            calls.add(callName);
         } else if (infixFn.test(token)) {
             const callName =
                 token in infixFnMappings ?
                     infixFnMappings[token] :
                     token;
             line += callName + " ";
-            calls.push(callName);
+            calls.add(callName);
         } else if (upperId.test(token)) {
             const callName = upperIdMappings[token];
 
@@ -566,7 +630,7 @@ tokens.forEach(l => {
 
             line += callName + (backtickFlag ? "` " : " ");
             backtickFlag = false;
-            calls.push(callName);
+            calls.add(callName);
         } else if (lowerId.test(token)) {
             line += token + " ";
         }
@@ -643,16 +707,62 @@ tokens.forEach(l => {
         line = newId + " = " + line;
     }
 
-    out += line;
+    lineArray.push(line);
+});
+
+const imported = new Set();
+calls.forEach(call => {
+    const qual = call.split(".").shift();
+    if (!qual || imported.has(qual)) {
+        return;
+    }
+    const importStatement = imports[qual];
+    if (importStatement) {
+        imported.add(qual);
+        out += importStatement + "\n";
+    }
+    const def = definitions[call];
+    if (!def) {
+        return;
+    }
+    for (let i = 1; i < def.length; ++i) {
+        const addedImportStatement = imports[def[i]];
+        if (addedImportStatement) {
+            imported.add(def[i]);
+            out += addedImportStatement + "\n";
+        }
+    }
+});
+
+out += "\n\n";
+
+const defined = new Set();
+calls.forEach(call => {
+    if (defined.has(call)) {
+        return;
+    }
+    const def = definitions[call];
+    if (!def) {
+        return;
+    }
+    defined.add(call);
+    out += def[0];
     out += "\n\n";
 });
 
+out += "\n";
+out += lineArray.map(l => l.trimRight()).join("\n\n");
 
 /* Temporary hack ;) */
+out += "\n\n\n";
 out += "main :: P.IO ()\n";
 out += "main = do\n";
 nakeds.forEach(n => out += "    P.print P.$ " + n + "\n");
 
-fs.writeFileSync(outputFile, out, "utf8");
+try {
+    fs.writeFileSync(outputFile, out, "utf8");
+} catch (e) {
+    throw e;
+}
 
 console.log("Successfully wrote", outputFile);
