@@ -360,14 +360,25 @@ import qualified Prelude             as P
 const calls = [];
 
 tokens.forEach(l => {
+    const l_ = [];
+
     function failWithContext(msg) {
         if (msg) {
             console.log(msg);
         } else {
             console.log("Parsing failure.");
         }
+
         console.log("Context:\n");
-        console.log("    " + l.join(" "));
+
+        const context = l_.join(" ");
+        const trimmed =
+            context.length <= 79 ?
+                context :
+                context.slice(context.length - 79);
+        console.log(" ".repeat(trimmed.length - 1) + "↓");
+        console.log(trimmed);
+
         process.exit(1);
     }
 
@@ -375,11 +386,19 @@ tokens.forEach(l => {
 
     let backtickFlag = false;
     let doFlag = false;
+    const matchStack = [];
+    let awaitCaseOf = 0;
+    let multiwayIfFlag = false;
+    /*
     let parenScope = 0;
     let letScope = 0;
     let squareScope = 0;
+    let caseScope = 0;
+    */
 
     l.forEach(token => {
+        l_.push(token);
+
         if (backtickFlag && !(upperId.test(token) || lowerId.test(token))) {
             failWithContext("Illegal use of backtick: `" + token);
         }
@@ -394,10 +413,12 @@ tokens.forEach(l => {
             line += " ";
         } else if (rightArr.test(token)) {
             line += "-> ";
+            // TODO: multiway `if` semantics
+            // w/ lookbehind for |→
         } else if (leftArr.test(token)) {
             line += "<- ";
         } else if (do_.test(token)) {
-            line += "(do ";
+            line += "( do ";
             doFlag = true;
         } else if (".." === token) {
             line += ".. ";
@@ -415,40 +436,90 @@ tokens.forEach(l => {
             backtickFlag = true;
         } else if ("(" === token) {
             line += "( ";
-            parenScope++;
+            matchStack.push("(");
         } else if (")" === token) {
             line += ") ";
-            parenScope--;
-            if (parenScope < 0) {
+            if (matchStack.pop() !== "(") {
                 failWithContext("Mismatched parentheses.");
             }
         } else if ("{" === token) {
             line += "let ";
-            letScope++;
+            matchStack.push("{");
         } else if ("}" === token) {
             line += "in ";
-            letScope--;
-            if (letScope < 0) {
+            if (matchStack.pop() !== "{") {
                 failWithContext("Mismatched let blocks.");
             }
         } else if ("[" === token) {
             line += "[ ";
-            squareScope++;
+            matchStack.push("[");
         } else if ("]" === token) {
-            // TODO: square bracket semantics
+            line += "] ";
+            if (matchStack.pop() !== "[") {
+                failWithContext("Mismatched square brackets.");
+            }
         } else if ("⟨" === token) {
-            // TODO: angle bracket semantics
+            line += "( case ";
+            matchStack.push("⟨");
+            awaitCaseOf++;
         } else if ("⟩" === token) {
-            // TODO: angle bracket semantics
+            line += ") ";
+            if (matchStack.pop() !== "⟨") {
+                failWithContext("Mismatched case blocks.");
+            }
+            if (awaitCaseOf > matchStack.filter(m => m === "⟨").length) {
+                failWithContext("Incorrect case block syntax.");
+            }
         } else if (comma.test(token)) {
-            line += token + " ";
-            // TODO: extra comma semantics
+            if (multiwayIfFlag) {
+                // TODO: multiway `if` semantics
+            }
+
+            const peek =
+                matchStack.length > 0 ?
+                    matchStack[matchStack.length - 1] :
+                    undefined;
+
+            if (!peek) {
+                failWithContext("Unexpected comma.");
+            }
+            switch (peek) {
+                case "{":
+                    line += "; ";
+                    break;
+                case "⟨":
+                    // This has to be replaced after initial parsing by
+                    // looking ahead to the next filled case:
+                    line += "-> ; ";
+                    break;
+                default:
+                    line += ", ";
+            }
         } else if ("@" === token) {
             line += "@ ";
         } else if ("|" === token) {
-            // TODO: full pipe semantics
+            if (!multiwayIfFlag) {
+                line += "if ";
+                multiwayIfFlag = true;
+            } else {
+                line += "else if ";
+            }
         } else if ("¦" === token) {
-            // TODO: broken pipe semantics
+            const peek =
+                matchStack.length > 0 ?
+                    matchStack[matchStack.length - 1] :
+                    "";
+
+            switch (peek) {
+                case "[":
+                    line += "| ";
+                    break;
+                case "⟨":
+                    line += "; ";
+                    break;
+                default:
+                    failWithContext("Unexpected broken pipe.");
+            }
         } else if ("-" === token) {
             line += "P.negate ";
         } else if ("_" === token) {
@@ -479,14 +550,24 @@ tokens.forEach(l => {
         }
     });
 
-    if (parenScope !== 0) {
-        failWithContext("Mismatched parentheses.");
+    const leftOver = matchStack.pop();
+    if (leftOver) {
+        if (leftOver === "(") {
+            failWithContext("Mismatched parentheses.");
+        }
+        if (leftOver === "{") {
+            failWithContext("Mismatched let blocks.");
+        }
+        if (leftOver === "[") {
+            failWithContext("Mismatched square brackets.");
+        }
+        if (leftOver === "⟨") {
+            failWithContext("Mismatched case blocks.");
+        }
     }
-    if (letScope !== 0) {
-        failWithContext("Mismatched let blocks.");
-    }
-    if (squareScope !== 0) {
-        failWithContext("Mismatched square brackets.");
+
+    if (awaitCaseOf !== 0) {
+        failWithContext("Incorrect case block syntax.");
     }
 
     if (backtickFlag) {

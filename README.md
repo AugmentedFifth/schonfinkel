@@ -185,10 +185,29 @@ f x =
         _ -> 12 + x
 ```
 
-can be translated directly into Schönfinkel as:
+can be translated directly into Schönfinkel as (note the **angle brackets**,
+`⟨ ⟩`, distinct from less than/greater-than symbols, `< >`):
 
 ```haskell
 f x=⟨x¦0→18¦1→15¦2→12¦→12+x⟩
+```
+
+Additionally, multiple possible matches can map to the same expression easily
+and without redundancy using commas (`,`). The following Haskell:
+
+```haskell
+f x =
+    case x of
+        0 -> 18
+        1 -> 16
+        2 -> 16
+        _ -> 12 + x
+```
+
+can be translated directly into Schönfinkel as:
+
+```haskell
+f x=⟨x¦0→18¦1,2→16¦→12+x⟩
 ```
 
 #### do notation
