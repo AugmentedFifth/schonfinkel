@@ -362,7 +362,7 @@ const calls = [];
 tokens.forEach(l => {
     const l_ = [];
 
-    function failWithContext(msg) {
+    function failWithContext(msg, pinpoint=true) {
         if (msg) {
             console.log(msg);
         } else {
@@ -372,12 +372,16 @@ tokens.forEach(l => {
         console.log("Context:\n");
 
         const context = l_.join(" ");
-        const trimmed =
-            context.length <= 79 ?
-                context :
-                context.slice(context.length - 79);
-        console.log(" ".repeat(trimmed.length - 1) + "↓");
-        console.log(trimmed);
+        if (pinpoint) {
+            const trimmed =
+                context.length <= 79 ?
+                    context :
+                    context.slice(context.length - 79);
+            console.log(" ".repeat(trimmed.length - 1) + "↓");
+            console.log(trimmed);
+        } else {
+            console.log(context);
+        }
 
         process.exit(1);
     }
@@ -388,13 +392,7 @@ tokens.forEach(l => {
     let doFlag = false;
     const matchStack = [];
     let awaitCaseOf = 0;
-    let multiwayIfFlag = false;
-    /*
-    let parenScope = 0;
-    let letScope = 0;
-    let squareScope = 0;
-    let caseScope = 0;
-    */
+    let multiwayIfScope = 0;
 
     l.forEach(token => {
         l_.push(token);
@@ -412,9 +410,19 @@ tokens.forEach(l => {
         } else if (blockComment.test(token) || spacing.test(token)) {
             line += " ";
         } else if (rightArr.test(token)) {
-            line += "-> ";
-            // TODO: multiway `if` semantics
-            // w/ lookbehind for |→
+            if (multiwayIfScope > matchStack.length) {
+                if (
+                    line.length >= 8 &&
+                    line.slice(line.length - 8) === "else if "
+                ) {
+                    line = line.slice(0, -3);
+                    multiwayIfScope = 0;
+                } else {
+                    line += "then ";
+                }
+            } else {
+                line += "-> ";
+            }
         } else if (leftArr.test(token)) {
             line += "<- ";
         } else if (do_.test(token)) {
@@ -430,7 +438,7 @@ tokens.forEach(l => {
             } else {
                 line += " ";
             }
-            // TODO: rest of the semicolon semantics?
+            // TODO: rest of the semicolon semantics? (?)
         } else if ("`" === token) {
             line += "`";
             backtickFlag = true;
@@ -471,36 +479,34 @@ tokens.forEach(l => {
                 failWithContext("Incorrect case block syntax.");
             }
         } else if (comma.test(token)) {
-            if (multiwayIfFlag) {
-                // TODO: multiway `if` semantics
-            }
+            if (multiwayIfScope > matchStack.length) {
+                line += "&%&%& ";
+            } else {
+                const peek =
+                    matchStack.length > 0 ?
+                        matchStack[matchStack.length - 1] :
+                        undefined;
 
-            const peek =
-                matchStack.length > 0 ?
-                    matchStack[matchStack.length - 1] :
-                    undefined;
-
-            if (!peek) {
-                failWithContext("Unexpected comma.");
-            }
-            switch (peek) {
-                case "{":
-                    line += "; ";
-                    break;
-                case "⟨":
-                    // This has to be replaced after initial parsing by
-                    // looking ahead to the next filled case:
-                    line += "-> ; ";
-                    break;
-                default:
-                    line += ", ";
+                if (!peek) {
+                    failWithContext("Unexpected comma.");
+                }
+                switch (peek) {
+                    case "{":
+                        line += "; ";
+                        break;
+                    case "⟨":
+                        line += "-> ; ";
+                        break;
+                    default:
+                        line += ", ";
+                }
             }
         } else if ("@" === token) {
             line += "@ ";
         } else if ("|" === token) {
-            if (!multiwayIfFlag) {
+            if (!multiwayIfScope) {
                 line += "if ";
-                multiwayIfFlag = true;
+                multiwayIfScope = matchStack.length + 1;
             } else {
                 line += "else if ";
             }
@@ -553,32 +559,68 @@ tokens.forEach(l => {
     const leftOver = matchStack.pop();
     if (leftOver) {
         if (leftOver === "(") {
-            failWithContext("Mismatched parentheses.");
+            failWithContext("Mismatched parentheses.", false);
         }
         if (leftOver === "{") {
-            failWithContext("Mismatched let blocks.");
+            failWithContext("Mismatched let blocks.", false);
         }
         if (leftOver === "[") {
-            failWithContext("Mismatched square brackets.");
+            failWithContext("Mismatched square brackets.", false);
         }
         if (leftOver === "⟨") {
-            failWithContext("Mismatched case blocks.");
+            failWithContext("Mismatched case blocks.", false);
         }
     }
 
-    if (awaitCaseOf !== 0) {
-        failWithContext("Incorrect case block syntax.");
+    if (awaitCaseOf) {
+        failWithContext("Incorrect case block syntax.", false);
+    }
+
+    if (multiwayIfScope) {
+        failWithContext(
+            'Incomplete multi-way "if" statement. (missing |→)',
+            false
+        );
     }
 
     if (backtickFlag) {
         line += "`";
     }
 
+    while (~line.indexOf("-> ; ")) {
+        const lastIndex = line.lastIndexOf("-> ; ");
+        const miniMs = [];
+        let repl = null;
+        const a = line.slice(lastIndex + 3).split("");
+        for (let i = 0; i < a.length; ++i) {
+            const ch = a[i];
+            if (ch === "⟨") {
+                miniMs.push("⟨");
+            } else if (ch === "⟩") {
+                miniMs.pop();
+            } else if (
+                ch === ">" &&
+                i > 0 &&
+                a.length > i + 1 &&
+                a[i + 1] === " " &&
+                a[i - 1] === "-" &&
+                miniMs.length < 1
+            ) {
+                repl = a.slice(i - 1, a.indexOf(";", i)) + "; ";
+            }
+        }
+        if (repl === null) {
+            failWithContext(
+                "Misplaced comma in pattern of case statement.",
+                false
+            );
+        }
+        const splitOut = line.split("-> ; ");
+        const rightSplit = splitOut.pop();
+        const leftSplit = splitOut.join("-> ; ");
+        line = leftSplit + repl + rightSplit;
+    }
+
     out += line;
     out += "\n\n";
 });
-
-
-/* Semantic tagging */
-
-

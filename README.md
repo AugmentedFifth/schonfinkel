@@ -148,7 +148,7 @@ v=[(-1, 8), (-1, 3), (23, 1), (1, 1)]
 ```
 
 As you can see, omitting the condition (`|→`) always matches; it's the same as
-matching on `True` (`|True->`).
+matching on `True` (`|True->`), or just the `else` keyword.
 
 It's common to get away with not using the `&&` function when logical AND is
 needed. Instead, guards and multi-way "if"s like the one above can have multiple
