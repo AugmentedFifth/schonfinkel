@@ -10,38 +10,38 @@ const codepage =
     "?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~⋄";
 
 /* Ordered by precedence */
-const lineFeed = /\n+/m;
-const charLiteral = /'[^\n]'/m;
-const strLiteral = /"[^\n]*"/m;
-const blockComment = /{-.*-}/m;
-const lineComment = /--[^\n]*/m;
-const spacing = / +/m;
-const rightArr = /→/m;
-const leftArr = /←/m;
-const do_ = /⟥/m;
-const doubleDots = /\.\.(?=[^!#\$%&*+./:<=>?@\\^|~-])/m;
-const numericLiteral = /[0-9]*\.?[0-9]+/m;
-const eqBinding = /=(?=[^!#\$%&*+./:<=>?@\\^|~-])/m;
-const semicolon = /;/m;
-const backtick = /`/m;
-const leftParen = /\(/m;
-const rightParen = /\)/m;
-const leftCurBracket = /{/m;
-const rightCurBracket = /}/m;
-const leftSqBracket = /\[/m;
-const rightSqBracket = /\]/m;
-const leftAngBracket = /⟨/m;
-const rightAngBracket = /⟩/m;
-const comma = /,/m;
-const asAt = /@(?=[^!#\$%&*+./:<=>?@\\^|~-])/m;
-const vert = /\|/m;
-const brokenVert = /¦/m;
-const unaryMinus = /-(?=[^!#\$%&*+./:<=>?@\\^|~-])/m;
-const underscore = /_/m;
-const specialFn = /[⊛≡≢¬⊙⩖⤔∈⁂⅋∩∪Σ↵⊢∀∃¡Δ×⊠÷⋄]/m;
-const infixFn = /(\^≫|≫|≫=|≫>|≫\^|\^≪|≪<|≪\^|⌊|⌊\^|⌊#|⌊!|[!#\$%&*+./:<=>?@\\^|~\-]+)/m;
-const upperId = /[A-Z]+/m;
-const lowerId = /[a-z]+/m;
+const lineFeed = /^\n+/;
+const charLiteral = /^'[^\n]'/;
+const strLiteral = /^"[^\n]*"/;
+const blockComment = /^{-.*-}/;
+const lineComment = /^--[^\n]*/;
+const spacing = /^ +/;
+const rightArr = /^→/;
+const leftArr = /^←/;
+const do_ = /^⟥/;
+const doubleDots = /^\.\.(?=[^!#\$%&*+./:<=>?@\\^|~-])/;
+const numericLiteral = /^[0-9]*\.?[0-9]+/;
+const eqBinding = /^=(?=[^!#\$%&*+./:<=>?@\\^|~-])/;
+const semicolon = /^;/;
+const backtick = /^`/;
+const leftParen = /^\(/;
+const rightParen = /^\)/;
+const leftCurBracket = /^{/;
+const rightCurBracket = /^}/;
+const leftSqBracket = /^\[/;
+const rightSqBracket = /^\]/;
+const leftAngBracket = /^⟨/;
+const rightAngBracket = /^⟩/;
+const comma = /^,/;
+const asAt = /^@(?=[^!#\$%&*+./:<=>?@\\^|~-])/;
+const vert = /^\|/;
+const brokenVert = /^¦/;
+const unaryMinus = /^-(?=[^!#\$%&*+./:<=>?@\\^|~-])/;
+const underscore = /^_/;
+const specialFn = /^[⊛≡≢¬⊙⩖⤔∈⁂⅋∩∪Σ↵⊢∀∃¡Δ×⊠÷⋄]/;
+const infixFn = /^(\^≫|≫|≫=|≫>|≫\^|\^≪|≪<|≪\^|⌊|⌊\^|⌊#|⌊!|[!#\$%&*+./:<=>?@\\^|~\-]+)/;
+const upperId = /^[A-Z]+/;
+const lowerId = /^[a-z]+/;
 const regexes =
     [ lineFeed
     , charLiteral
@@ -136,7 +136,7 @@ const unicode = (() => {
 
 const input = fs.readFileSync(inputFile, unicode ? "utf8" : undefined);
 
-const code =
+let code =
     unicode ?
         input.split("").filter(c => ~codepage.indexOf(c)).join("") :
         schDecode(input);
@@ -145,6 +145,28 @@ const code =
 
 const tokens = [[]];
 
-code.split("").forEach(c => {
+while (code.length > 0) {
+    for (const regex of regexes) {
+        const match = regex.exec(code);
+        if (match === null) {
+            continue;
+        }
 
-});
+        const matchStr = match[0];
+        code = code.slice(matchStr.length);
+
+        if (~matchStr.indexOf("\n")) {
+            if (tokens[tokens.length - 1].length > 0) {
+                tokens.push([]);
+            }
+        } else if (!spacing.test(matchStr)) {
+            tokens[tokens.length - 1].push(matchStr);
+        }
+
+        break;
+    }
+}
+
+if (tokens[tokens.length - 1].length < 1) {
+    tokens.pop();
+}

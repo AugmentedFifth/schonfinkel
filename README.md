@@ -193,16 +193,16 @@ be used to separate statements within a `do` block just like in Haskell.
 
 #### Comments
 
-Comments are the same style as Haskell; more precisely, a block comment matches
+Comments are the same style as Haskell; more precisely, a block comment matches:
 
 ```javascript
-/{-.*-}/m
+/{-.*-}/
 ```
 
-(where `m` means multi-line match). A line comment, then, matches:
+A line comment, then, matches:
 
 ```javascript
-/--[^\n]*/m
+/--[^\n]*/
 ```
 
 ### Built-in functions (builtins)
