@@ -191,6 +191,52 @@ be used to separate statements within a `do` block just like in Haskell.
 
 ### Further notes on syntax
 
+#### Whitespace
+
+The only whitespace that is really significant in Schönfinkel is line feeds
+(`'\n'`; LF; codepoint 0x0A). Spaces (`' '`; codepoint 0x20), the only other
+kind of whitespace, are only significant when they are needed to distinguish one
+token from another, e.g.
+
+```haskell
+Lab
+```
+
+Applies the `L` function to `ab`, whereas
+
+```haskell
+La b
+```
+
+applies the `L` function to `a` and is then followed by `b`. And of course,
+spaces are significant inside of character and string literals.
+
+Line feeds, on the other hand, separate semantic contexts. Once a line feed is
+inserted, any context (like bindings and their values) is no longer visible
+except for so-called "top-level bindings", which are bindings made flush to the
+left (i.e. at the very beginning of a line). Just like in Haskell, this is the
+only way to define a function visible "globally":
+
+```haskell
+f={i=1}(Δi).L
+g=f[0..7]
+```
+
+`f` is visible within the semantic context of `g` because `f` is defined as a
+top-level binding, but `i` is not visible; it was bound inside of `f`'s context.
+
+Of course, we might want to have nested contexts. For this, parentheses (`( )`)
+can be used. Bindings made within a pair of parentheses are not visible anywhere
+outside of them:
+
+```haskell
+f x=({l=W(<3)x}⊠l)l  -- Very bad!
+```
+
+The above won't work, because the second time that `l` is mentioned is outside
+of the parentheses that it was bound in. Since the parentheses are dictating the
+semantic context in this case, there's no such thing as `l` outside of them.
+
 #### Comments
 
 Comments are the same style as Haskell; more precisely, a block comment matches:
@@ -204,6 +250,39 @@ A line comment, then, matches:
 ```javascript
 /--[^\n]*/
 ```
+
+#### Tuples
+
+Tuple syntax is almost entirely the same as in Haskell, with a small exception.
+Schönfinkel uses Haskell's `TupleSections` language mode by default. In Haskell:
+
+```haskell
+{-# LANGUAGE TupleSections #-}
+
+t = ("!-",, "-!") <$> [0..2]
+```
+
+Here, `t` is `[("!-", 0, "-!"), ("!-", 1, "-!"), ("!-", 2, "-!")]`. As you can
+see, this essentially means that tuple constructors (normally like `(,)` or
+`(,,)`) can be partially applied. And, notably, the partial application can
+occur anywhere in any n-tuple constructor.
+
+### Whole-program semantics
+
+Unlike Haskell, Schönfinkel can have "naked" expressions at top-level. "Naked"
+here refers to expressions that aren't bound to anything. In Haskell this makes
+no sense, since the expression is then unusable/useless. In Schönfinkel,
+however, any top-level naked expressions that are encountered in the source code
+(reading from top to bottom) are considered the program's main body. If there
+are multiple such naked expressions (i.e. separated by line feeds), then the
+expressions are considered in order of occurence.
+
+Naked expressions that don't already have a type of `IO a` are automatically
+wrapped up into expressions of type `IO ()`, by simply printing their values to
+stdout, after being `show`n and having a line feed appended to the resulting
+`String`. Now that all naked expressions have a type of `IO a`, they are called
+as if from the `main` function, in order of occurence, chained using the `>>`
+function (i.e. any "return values", trivial or nontrivial, are discarded).
 
 ### Built-in functions (builtins)
 

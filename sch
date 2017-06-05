@@ -79,7 +79,7 @@ const regexes =
 
 const usage = `\
 Usage:
-=======
+======
 
 sch -c <inputFile> [outputFile]    Compiles a Schönfinkel source
                                    file using the Schönfinkel
@@ -88,7 +88,9 @@ sch -c <inputFile> [outputFile]    Compiles a Schönfinkel source
                                    optionally supplied output file.
 
 sch -u <inputFile> [outputfile]    Same as above, but uses Unicode
-                                   (UTF-8) encoding instead.`;
+                                   (UTF-8) encoding instead.
+
+For more info, visit https://github.com/AugmentedFifth/schonfinkel`;
 
 function nameOutput(inputName) {
     const split = inputName.split(".");
@@ -143,9 +145,13 @@ let code =
 
 // ============ Begin compilation ============ //
 
+/* Tokenization */
+
 const tokens = [[]];
 
 while (code.length > 0) {
+    let matched = false;
+
     for (const regex of regexes) {
         const match = regex.exec(code);
         if (match === null) {
@@ -163,10 +169,29 @@ while (code.length > 0) {
             tokens[tokens.length - 1].push(matchStr);
         }
 
+        matched = true;
         break;
+    }
+
+    if (!matched) {
+        console.log("Encountered unexpected character: " + code[0]);
+        console.log("Context:\n");
+        console.log("    " + tokens[tokens.length - 1].join(" "));
+        process.exit(1);
     }
 }
 
 if (tokens[tokens.length - 1].length < 1) {
     tokens.pop();
 }
+
+/* Hacky parsing directly into Haskell */
+
+let out = "";
+
+
+
+
+/* Semantic tagging */
+
+
