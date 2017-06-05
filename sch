@@ -356,13 +356,25 @@ import qualified Data.Maybe          as May
 import qualified Data.Ord            as O
 
 import qualified Prelude             as P
+
+
 `;
 const calls = [];
+const nakeds = [];
+function makeId(i) {
+    return (i >= 26 ? makeId((i / 26 >> 0) - 1) : "") +
+           "abcdefghijklmnopqrstuvwxyz"[i % 26 >> 0] +
+           "9";
+}
 
 tokens.forEach(l => {
     const l_ = [];
 
-    function failWithContext(msg, pinpoint=true) {
+    function failWithContext(msg, pinpoint) {
+        if (pinpoint === undefined) {
+            pinpoint = true;
+        }
+
         if (msg) {
             console.log(msg);
         } else {
@@ -387,6 +399,7 @@ tokens.forEach(l => {
     }
 
     let line = "";
+    let naked = true;
 
     let backtickFlag = false;
     let doFlag = false;
@@ -432,6 +445,9 @@ tokens.forEach(l => {
             line += ".. ";
         } else if ("=" === token) {
             line += "= ";
+            if (!matchStack.length) {
+                naked = false;
+            }
         } else if (";" === token) {
             if (doFlag) {
                 line += "; ";
@@ -621,6 +637,22 @@ tokens.forEach(l => {
         line = leftSplit + repl + rightSplit;
     }
 
+    if (naked) {
+        const newId = makeId(nakeds.length);
+        nakeds.push(newId);
+        line = newId + " = " + line;
+    }
+
     out += line;
     out += "\n\n";
 });
+
+
+/* Temporary hack ;) */
+out += "main :: P.IO ()\n";
+out += "main = do\n";
+nakeds.forEach(n => out += "    P.print P.$ " + n + "\n");
+
+fs.writeFileSync(outputFile, out, "utf8");
+
+console.log("Successfully wrote", outputFile);
