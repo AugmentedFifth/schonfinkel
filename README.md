@@ -41,11 +41,14 @@ numeric literals exclusively.
 Additionally, the first 5 lowercase letters as a single identifier (`a`, `b`,
 `c`, `d`, `e`) are identifiers reserved for implicit input/command-line
 arguments. `b`, `c`, `d`, and `e` are the 1st, 2nd, 3rd, and 4th inputs to the
-program, in order, as `String`s. If less than 4 arguments are supplied, the
-remaining variables are just the empty string (`""`). If more than 4 arguments
-are supplied, `b`, `c`, `d`, and `e` are assigned normally, and `a` is always a
-list of all arguments supplied (of type `[String]`), so all arguments are always
-accessible.
+program, in order, as `String`s. **NOTE**: These bindings are only visible
+inside of "naked" top-level expressions (see the "**Whole program semantics**"
+section below), so everywhere else, these identifiers are *not* reserved.
+
+If less than 4 arguments are supplied, the remaining variables are just the
+empty string (`""`). If more than 4 arguments are supplied, `b`, `c`, `d`, and
+`e` are assigned normally, and `a` is always a list of all arguments supplied
+(of type `[String]`), so all arguments are always accessible.
 
 Infix functions can still be defined normally like in Haskell. The characters
 available to be used are slightly different: for one-character infix functions
@@ -67,10 +70,11 @@ La -- yields `9`
 consists only of uppercase letters. This allows it to be differentiated from
 `a`, which is another distinct token. In Haskell this would have to be `L a`
 (note the space in between). Just like in Haskell, function invocations can be
-made in infix form even for alphabetically-named functions by simply surrounding
-the function identifier with backticks (`` ` ``). However, in Schönfinkel the
-backtick on the right side of the identifier is optional. If it is omitted, the
-backtick is "automatically inserted" just before the next character that either
+made in infix form even for alphabetically-named functions. In Haskell, this is
+achieved by simply surrounding the function identifier with backticks (`` ` ``).
+However, in Schönfinkel there is no backtick on the right side of the
+identifier. Instead, the "missing" backtick is "automatically inserted" just
+before the next character that either
 
 * isn't alphabetic, or
 * is of a different case (lower → upper or vice versa).
@@ -85,8 +89,14 @@ For example:
 function where the initial backtick captures the `U` and then continues on until
 it finds a non-alphabetic character or a letter that is of a different case
 (lowercase). It immediately runs into the `[` character, so the backtick is
-inserted just before that, yielding ``", "`U`["one","two","three","four"]``.
-This is the same thing:
+inserted just before that, yielding an interpretation of
+
+```haskell
+", "`U`["one","two","three","four"]
+```
+
+(N.B.: The above snippet isn't actually valid Schönfinkel since it would be
+trying to make the list into an infix function.) This is the same thing:
 
 ```haskell
 y=["one","two","three","four"]
@@ -829,6 +839,13 @@ Infix?: yes
 ====
 
 Equivalent of `Control.Applicative.<*` in Haskell.
+
+Infix?: yes
+
+`=≪`
+====
+
+Equivalent of `Control.Monad.=<<` in Haskell.
 
 Infix?: yes
 
