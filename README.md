@@ -15,7 +15,7 @@ Schönfinkel is under active development and is by no means a finished product;
 as such, expect features to appear and disappear or even changes in semantics
 to occur without prior notice.
 
-## How to start running; implementation
+## Getting started; implementation
 
 ## Documentation
 
@@ -210,7 +210,7 @@ can be translated directly into Schönfinkel as:
 f x=⟨x¦0→18¦1,2→16¦→12+x⟩
 ```
 
-#### do notation
+#### `do` notation
 
 `do` notation works in Schönfinkel much the same way as in Haskell, but instead
 of the word `do`, the `⟥` character is used instead. This saves the programmer

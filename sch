@@ -224,8 +224,8 @@ mapWithIndices f xs = P.zipWith f xs [0..]`]
 
 /* Ordered by precedence */
 const lineFeed = /^\n+/;
-const charLiteral = /^'[^\n]'/;
-const strLiteral = /^"[^\n]*?"/;
+const charLiteral = /^'\\?[^\n]'/;
+const strLiteral = /^"(\\.|[^"])*"/;
 const blockComment = /^{-.*?-}/;
 const lineComment = /^--[^\n]*/;
 const spacing = /^ +/;
@@ -425,6 +425,7 @@ let out = "import qualified Prelude             as P\n\n";
 const lineArray = [];
 const calls = new Set();
 const nakeds = [];
+const range = /\[ ?([0-9]*\.?[0-9]+) ?\.\. ?([0-9]*\.?[0-9]+) ?\]/;
 function makeId(i) {
     return (i >= 26 ? makeId((i / 26 >> 0) - 1) : "") +
            "abcdefghijklmnopqrstuvwxyz"[i % 26 >> 0] +
@@ -699,6 +700,27 @@ tokens.forEach(l => {
         const rightSplit = splitOut.pop();
         const leftSplit = splitOut.join("-> ; ");
         line = leftSplit + repl + rightSplit;
+    }
+
+    let rangeIndex = 0;
+    for (;;) {
+        const rangeMatch = range.exec(line.slice(rangeIndex));
+        if (!rangeMatch) {
+            break;
+        }
+        rangeIndex += rangeMatch.index + 1;
+        if (+rangeMatch[1] <= +rangeMatch[2]) {
+            continue;
+        }
+        const repl =
+            "[ " +
+                rangeMatch[1] +
+                ", " +
+                (+rangeMatch[1] - 1) +
+                " .. " +
+                rangeMatch[2] +
+                " ]";
+        line = line.replace(rangeMatch[0], repl);
     }
 
     if (naked) {
