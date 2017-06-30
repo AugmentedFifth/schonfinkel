@@ -879,6 +879,10 @@ Infix?: no
 
 Unchanged from Haskell.
 
+## `$>`
+
+Equivalent of `Data.Functor.$>` in Haskell.
+
 ## `*>`
 
 Equivalent of `Control.Applicative.*>` in Haskell.
@@ -912,6 +916,18 @@ Infix?: yes
 ## `=≪`
 
 Equivalent of `Control.Monad.=<<` in Haskell.
+
+Infix?: yes
+
+## `=<`
+
+Equivalent of `Control.Monad.<=<` in Haskell.
+
+Infix?: yes
+
+## `=>`
+
+Equivalent of `Control.Monad.>=>` in Haskell.
 
 Infix?: yes
 
@@ -980,6 +996,12 @@ Mnemonic: **CO**sine
 Equivalent of `Data.Tuple.curry` in Haskell.
 
 Mnemonic: **C**u**R**ry
+
+## `CT`
+
+Equivalent of `Prelude.const` in Haskell.
+
+Mnemonic: **C**ons**T**ant
 
 ## `CY`
 
@@ -1205,6 +1227,12 @@ Equivalent of `Data.List.last` in Haskell.
 
 Mnemonic: **LA**st
 
+## `LC`
+
+Equivalent of `Prelude.lcm` in Haskell.
+
+Mnemonic: **L**east **C**ommon multiple
+
 ## `LG`
 
 Equivalent of `Prelude.log` in Haskell.
@@ -1219,9 +1247,21 @@ Mnemonic: **LI**nes
 
 ## `LM`
 
-Equivalent of `Prelude.lcm` in Haskell.
+Equivalent of `Control.Monad.liftM` in Haskell.
 
-Mnemonic: **L**east common **M**ultiple
+Mnemonic: **L**ift **M**onad
+
+## `LN`
+
+Equivalent of `Control.Monad.liftM2` in Haskell.
+
+Mnemonic: **L**ift **M+1=N**onad
+
+## `LO`
+
+Equivalent of `Control.Monad.liftM3` in Haskell.
+
+Mnemonic: **L**ift **M+2=O**onad
 
 ## `LU`
 

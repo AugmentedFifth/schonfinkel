@@ -45,6 +45,8 @@ const infixFnMappings = {
     "≪<": "Arr.<<<",
     "≪^": "Arr.<<^",
     "=≪": "M.=<<",
+    "=<": "M.<=<",
+    "=>": "M.>=>",
     "⌊":  "P.floor",
     "⌊^": "P.ceiling",
     "⌊#": "P.round",
@@ -59,6 +61,7 @@ const infixFnMappings = {
     "<":  "P.<",
     ">":  "P.>",
     "^":  "P.^",
+    "$>": "Fct.$>",
     "*>": "App.*>",
     "**": "P.**",
     "++": "P.++",
@@ -81,6 +84,7 @@ const upperIdMappings = {
     "CM": "O.compare",
     "CO": "P.cos",
     "CR": "P.curry",
+    "CT": "P.const",
     "CY": "L.cycle",
     "D":  "L.nub",
     "DI": "C.digitToInt",
@@ -123,9 +127,12 @@ const upperIdMappings = {
     "K":  "L.genericTake",
     "L":  "L.genericLength",
     "LA": "L.last",
+    "LC": "P.lcm",
     "LG": "P.log",
     "LI": "P.lines",
-    "LM": "P.lcm",
+    "LM": "M.liftM",
+    "LN": "M.liftM2",
+    "LO": "M.liftM3",
     "LU": "L.lookup",
     "LV": "unsafeLookup",
     "M":  "P.show",
@@ -451,10 +458,12 @@ const imports = {
     "L":   "import qualified Data.List           as L",
     "May": "import qualified Data.Maybe          as May",
     "O":   "import qualified Data.Ord            as O",
-    "C":   "import qualified Data.Char           as C"
+    "C":   "import qualified Data.Char           as C",
+    "Fct": "import qualified Data.Functor        as Fct"
 };
 
-let out = "import qualified Prelude             as P\n\n";
+let out = "{-# LANGUAGE TupleSections #-}\n\n";
+out += "import qualified Prelude             as P\n\n";
 out += "import qualified System.Environment  as E\n\n";
 const lineArray = [];
 const calls = new Set();
