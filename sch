@@ -83,6 +83,7 @@ const upperIdMappings = {
     "CR": "P.curry",
     "CY": "L.cycle",
     "D":  "L.nub",
+    "DI": "C.digitToInt",
     "DR": "L.genericDrop",
     "DW": "L.dropWhile",
     "E":  "F.maximum",
@@ -106,10 +107,18 @@ const upperIdMappings = {
     "GL": "P.getLine",
     "H":  "P.toEnum",
     "I":  "F.null",
+    "IA": "C.isAlpha",
+    "IC": "C.intToDigit",
+    "ID": "P.id",
     "IE": "L.iterate",
     "IJ": "May.isJust",
+    "IL": "C.isLower",
+    "IM": "C.isNumber",
     "IN": "May.isNothing",
+    "IP": "C.isPunctuation",
     "IR": "P.interact",
+    "IS": "C.isSpace",
+    "IU": "C.isUpper",
     "J":  "L.tail",
     "K":  "L.genericTake",
     "L":  "L.genericLength",
@@ -151,6 +160,8 @@ const upperIdMappings = {
     "SU": "P.succ",
     "T":  "L.transpose",
     "TA": "P.tan",
+    "TL": "C.toLower",
+    "TU": "C.toUpper",
     "U":  "L.intercalate",
     "UC": "P.uncurry",
     "UD": "P.undefined",
@@ -439,7 +450,8 @@ const imports = {
     "F":   "import qualified Data.Foldable       as F",
     "L":   "import qualified Data.List           as L",
     "May": "import qualified Data.Maybe          as May",
-    "O":   "import qualified Data.Ord            as O"
+    "O":   "import qualified Data.Ord            as O",
+    "C":   "import qualified Data.Char           as C"
 };
 
 let out = "import qualified Prelude             as P\n\n";
@@ -448,12 +460,31 @@ const lineArray = [];
 const calls = new Set();
 const nakeds = [];
 const range = /\[(.*?\S+?\s+?)\.\.(\s+?\S+?.*?)\]/;
+
 function makeId(i) {
     return (i >= 26 ? makeId((i / 26 >> 0) - 1) : "") +
            "abcdefghijklmnopqrstuvwxyz"[i % 26 >> 0] +
            "9";
 }
+
 function trimRange(rangeMatch) {
+    function failWithContext(msg, pinpoint) {
+        if (pinpoint === undefined) {
+            pinpoint = true;
+        }
+
+        if (msg) {
+            console.log(msg);
+        } else {
+            console.log("Parsing failure.");
+        }
+
+        console.log("Context:\n");
+        console.log(rangeMatch[0]);
+
+        process.exit(1);
+    }
+
     if (!rangeMatch) {
         return null;
     }
@@ -478,8 +509,8 @@ function trimRange(rangeMatch) {
     const rightHalf = rangeMatch[2].split("");
     let rightHalfAccu = "";
     let closed = false;
-    for (let _ = 0; _ < rightHalf.length; ++_) {
-        const chr = rightHalf[_];
+    for (let i = 0; i < rightHalf.length; ++i) {
+        const chr = rightHalf[i];
         switch (chr) {
             case "[":
                 bracketStack2.push("[");
@@ -503,6 +534,7 @@ function trimRange(rangeMatch) {
         index: leftIndex
     };
 }
+
 const openComment = /({-|--[^\n]*)/;
 
 tokens.forEach(l => {

@@ -753,7 +753,7 @@ Equivalent of `Prelude.read` in Haskell.
 
 Equivalent of `Prelude.fromEnum` in Haskell.
 
-Mnemonic: **O**rd[inal]
+Mnemonic: **O**rdinal
 
 ## `P`
 
@@ -811,7 +811,7 @@ Equivalent of `Data.List.scanl` in Haskell.
 
 Equivalent of `Data.List.takeWhile` in Haskell.
 
-Mnemonic: take**W**hile
+Mnemonic: take **W**hile
 
 ## `X`
 
@@ -987,17 +987,23 @@ Equivalent of `Data.List.cycle` in Haskell.
 
 Mnemonic: **CY**cle
 
+## `DI`
+
+Equivalent of `Data.Char.digitToInt` in Haskell.
+
+Mnemonic: **D**igit to **I**nteger
+
 ## `DR`
 
 Equivalent of `Data.List.genericDrop` in Haskell.
 
-Mnemonic: generic**DR**op
+Mnemonic: generic **DR**op
 
 ## `DW`
 
 Equivalent of `Data.List.dropWhile` in Haskell.
 
-Mnemonic: **D**rop**W**hile
+Mnemonic: **D**rop **W**hile
 
 ## `ER`
 
@@ -1022,7 +1028,7 @@ Mnemonic: **EX**ponential
 Similar to `Data.Foldable.find` in Haskell, but returns `undefined` on failure
 *(very dangerous!)* instead of using `Maybe` to represent success/failure.
 
-Mnemonic: **F**ind**D-1=C**
+Mnemonic: **F**in**D-1=C**
 
 Haskell implementation of this function:
 
@@ -1047,7 +1053,7 @@ Mnemonic: **F**in**D**
 Similar to `Data.List.findIndex` in Haskell, but returns `-1` on failure instead
 of using `Maybe` to represent success/failure.
 
-Mnemonic: **F**ind**I-1=H**ndex
+Mnemonic: **F**ind **I-1=H**ndex
 
 Haskell implementation of this function:
 
@@ -1065,25 +1071,25 @@ FH p l =
 
 Equivalent of `Data.List.findIndex` in Haskell.
 
-Mnemonic: **F**ind**I**ndex
+Mnemonic: **F**ind **I**ndex
 
 ## `FJ`
 
 Equivalent of `Data.Maybe.fromJust` in Haskell.
 
-Mnemonic: **F**rom**J**ust
+Mnemonic: **F**rom **J**ust
 
 ## `FL`
 
 Equivalent of `Data.List.foldl1'` in Haskell.
 
-Mnemonic: **F**old**L**eft1'
+Mnemonic: **F**old **L**eft 1'
 
 ## `FM`
 
 Equivalent of `Data.Maybe.fromMaybe` in Haskell.
 
-Mnemonic: **F**rom**M**aybe
+Mnemonic: **F**rom **M**aybe
 
 ## `FP`
 
@@ -1095,7 +1101,7 @@ Mnemonic: **F**li**P**
 
 Equivalent of `Data.Foldable.foldr1` in Haskell.
 
-Mnemonic: **F**old**R**ight1
+Mnemonic: **F**old **R**ight 1
 
 ## `FT`
 
@@ -1107,7 +1113,7 @@ Mnemonic: **F**irs**T**
 
 Equivalent of `System.IO.getChar` in Haskell.
 
-Mnemonic: **G**et**C**haracter
+Mnemonic: **G**et **C**haracter
 
 ## `GD`
 
@@ -1119,7 +1125,25 @@ Mnemonic: **G**reatest common **D**ivisor
 
 Equivalent of `System.IO.getLine` in Haskell.
 
-Mnemonic: **G**et**L**ine
+Mnemonic: **G**et **L**ine
+
+## `IA`
+
+Equivalent of `Data.Char.isAlpha` in Haskell.
+
+Mnemonic: **I**s **A**lphabetical
+
+## `IC`
+
+Equivalent of `Data.Char.intToDigit` in Haskell.
+
+Mnemonic: **I**nteger to **D-1=C**igit
+
+## `ID`
+
+Equivalent of `Prelude.id` in Haskell.
+
+Mnemonic: **ID**entity
 
 ## `IE`
 
@@ -1131,19 +1155,49 @@ Mnemonic: **I**t**E**rate
 
 Equivalent of `Data.Maybe.isJust` in Haskell.
 
-Mnemonic: **I**s**J**ust
+Mnemonic: **I**s **J**ust
+
+## `IL`
+
+Equivalent of `Data.Char.isLower` in Haskell.
+
+Mnemonic: **I**s **L**ower
+
+## `IM`
+
+Equivalent of `Data.Char.isNumber` in Haskell.
+
+Mnemonic: **I**s **N-1=M**umber
 
 ## `IN`
 
 Equivalent of `Data.Maybe.isNothing` in Haskell.
 
-Mnemonic: **I**s**N**othing
+Mnemonic: **I**s **N**othing
+
+## `IP`
+
+Equivalent of `Data.Char.isPunctuation` in Haskell.
+
+Mnemonic: **I**s **P**uncuation
 
 ## `IR`
 
 Equivalent of `System.IO.interact` in Haskell.
 
 Mnemonic: **I**nte**R**act
+
+## `IS`
+
+Equivalent of `Data.Char.isSpace` in Haskell.
+
+Mnemonic: **I**s **S**pace
+
+## `IU`
+
+Equivalent of `Data.Char.isUpper` in Haskell.
+
+Mnemonic: **I**s **U**pper
 
 ## `LA`
 
@@ -1212,7 +1266,7 @@ MI f xs = zipWith f xs [0..]
 
 Equivalent of `Data.Foldable.notElem` in Haskell.
 
-Mnemonic: **N**ot**E**lem
+Mnemonic: **N**ot **E**lement of
 
 ## `OD`
 
@@ -1260,7 +1314,7 @@ Mnemonic: **R**epli**C**ate
 
 Equivalent of `System.IO.readFile` in Haskell.
 
-Mnemonic: **R**ead**F**ile
+Mnemonic: **R**ead **F**ile
 
 ## `RM`
 
@@ -1296,7 +1350,7 @@ Mnemonic: **SI**ne
 
 Equivalent of `Data.List.scanl1` in Haskell.
 
-Mnemonic: **S**can**L**eft1
+Mnemonic: **S**can **L**eft 1
 
 ## `SN`
 
@@ -1320,13 +1374,13 @@ Mnemonic: **S**e**Q**uence
 
 Equivalent of `Data.List.scanr` in Haskell.
 
-Mnemonic: **S**can**R**ight
+Mnemonic: **S**can **R**ight
 
 ## `SS`
 
 Equivalent of `Data.List.scanr1` in Haskell.
 
-Mnemonic: **S**can**R+1=S**ight1
+Mnemonic: **S**can **R+1=S**ight 1
 
 ## `ST`
 
@@ -1345,6 +1399,18 @@ Mnemonic: **SU**ccessor
 Equivalent of `Prelude.tan` in Haskell.
 
 Mnemonic: **TA**ngent
+
+## `TL`
+
+Equivalent of `Data.Char.toLower` in Haskell.
+
+Mnemonic: **T**o **L**ower
+
+## `TU`
+
+Equivalent of `Data.Char.toUpper` in Haskell.
+
+Mnemonic: **T**o **U**pper
 
 ## `UC`
 
@@ -1386,7 +1452,7 @@ Mnemonic: **U**n**Z**ip
 
 Equivalent of `System.IO.writeFile` in Haskell.
 
-Mnemonic: **W**rite**F**ile
+Mnemonic: **W**rite **F**ile
 
 ## `WO`
 
@@ -1410,4 +1476,4 @@ Mnemonic: un**Z**ip **T+1=U**hree
 
 Equivalent of `Data.List.zipWith3` in Haskell.
 
-Mnemonic: **Z**ip**W**ith3
+Mnemonic: **Z**ip **W**ith 3
