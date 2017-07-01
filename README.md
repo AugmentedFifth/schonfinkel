@@ -973,6 +973,22 @@ Equivalent of `Data.List.break` in Haskell.
 
 Mnemonic: **BR**eak
 
+## `CA`
+
+Takes in a list and returns the Cartesian product of that list with itself.
+Note that unlike the `×` function, this function returns the ordered pairs as
+*lists of length 2*, not 2-tuples, since the types of both sides of the pair are
+guaranteed to be the same.
+
+Mnemonic: reflexive **CA**rtesian product
+
+Implementation in Haskell:
+
+```haskell
+CA :: [a] -> [[a]]
+CA l = [[x, y] | x <- l, y <- l]
+```
+
 ## `CG`
 
 Equivalent of `Data.Ord.comparing` in Haskell.
@@ -1002,6 +1018,38 @@ Mnemonic: **C**u**R**ry
 Equivalent of `Prelude.const` in Haskell.
 
 Mnemonic: **C**ons**T**ant
+
+## `CU`
+
+Takes in an integer and returns a list of the integers from 0 to that integer,
+both inclusive. Works for both positive and negative integers.
+
+Mnemonic: **C**o**U**nt
+
+Implementation in Haskell:
+
+```haskell
+CU :: Integral i => i -> [i]
+CU n | n >= 0    = [0..n]
+     | otherwise = [0,-1..n]
+```
+
+## `CV`
+
+Takes in an integer and returns a list of the integers from 1 to that integer if
+the integer is positive, and a list of the integers from -1 to that integer if
+it's negative. Both bounds are inclusive. Returns the empty list when the input
+is 0.
+
+Mnemonic: **C**o**U+1=V**nt
+
+Implementation in Haskell:
+
+```haskell
+CV :: Integral i => i -> [i]
+CV n | n >= 1    = [1..n]
+     | otherwise = [-1,-2..n]
+```
 
 ## `CY`
 
@@ -1044,6 +1092,12 @@ Mnemonic: **EV**en
 Equivalent of `Prelude.exp` in Haskell.
 
 Mnemonic: **EX**ponential
+
+## `FA`
+
+Equivalent of `Prelude.False` in Haskell.
+
+Mnemonic: **FA**lse
 
 ## `FC`
 
@@ -1314,17 +1368,50 @@ Equivalent of `Prelude.odd` in Haskell.
 
 Mnemonic: **OD**d
 
+## `PD`
+
+Equivalent of `Prelude.pred` in Haskell.
+
+Mnemonic: **P**re**D**ecessor
+
 ## `PI`
 
 Equivalent of `Prelude.pi` in Haskell.
 
 Mnemonic: **pi**
 
+## `PN`
+
+Takes in an integer and returns a boolean indicating whether or not the integer
+is a positive prime number.
+
+Mnemonic: is a **P**rime **N**umber
+
+Haskell implementation of this function:
+
+```haskell
+PN :: Integral i => i -> Bool
+PN n = n > 1 && all ((/= 0).(n `mod`)) [2..n `div` 2]
+```
+
 ## `PR`
 
-Equivalent of `Prelude.pred` in Haskell.
+A list of positive integers representing all prime numbers, in order.
 
-Mnemonic: **PR**edecessor
+Mnemonic: **PR**imes
+
+Haskell implementation of this function:
+
+```haskell
+PR :: Integral i => [i]
+PR = 2:3:prs
+    where
+        1:p:candidates = [6 * k + r | k <- [0..], r <- [1, 5]]
+        prs            = p : filter isPrime candidates
+        isPrime n      = all (not . divides n)
+                             $ takeWhile (\p' -> p' * p' <= n) prs
+        divides n p''  = n `mod` p'' == 0
+```
 
 ## `PS`
 
@@ -1445,6 +1532,12 @@ Mnemonic: **TA**ngent
 Equivalent of `Data.Char.toLower` in Haskell.
 
 Mnemonic: **T**o **L**ower
+
+## `TR`
+
+Equivalent of `Prelude.True` in Haskell.
+
+Mnemonic: **TR**ue
 
 ## `TU`
 

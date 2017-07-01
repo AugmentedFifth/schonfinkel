@@ -80,11 +80,14 @@ const upperIdMappings = {
     "B":  "L.sortBy",
     "BR": "L.break",
     "C":  "F.concat",
+    "CA": "reflexiveCartesian",
     "CG": "O.comparing",
     "CM": "O.compare",
     "CO": "P.cos",
     "CR": "P.curry",
     "CT": "P.const",
+    "CU": "countFromZero",
+    "CV": "countFromOne",
     "CY": "L.cycle",
     "D":  "L.nub",
     "DI": "C.digitToInt",
@@ -95,6 +98,7 @@ const upperIdMappings = {
     "EV": "P.even",
     "EX": "P.exp",
     "F":  "L.zipWith",
+    "FA": "P.False",
     "FC": "unsafeFind",
     "FD": "F.find",
     "FH": "findIndex1",
@@ -142,8 +146,10 @@ const upperIdMappings = {
     "O":  "P.fromEnum",
     "OD": "P.odd",
     "P":  "P.print",
+    "PD": "P.pred",
     "PI": "P.pi",
-    "PR": "P.pred",
+    "PN": "isPrime",
+    "PR": "allPrimes",
     "PS": "P.putStrLn",
     "PT": "P.putStr",
     "Q":  "subIndex",
@@ -168,6 +174,7 @@ const upperIdMappings = {
     "T":  "L.transpose",
     "TA": "P.tan",
     "TL": "C.toLower",
+    "TR": "P.True",
     "TU": "C.toUpper",
     "U":  "L.intercalate",
     "UC": "P.uncurry",
@@ -256,7 +263,35 @@ mapWithIndices f xs = P.zipWith f xs [0..]`],
 enumFromThrough :: P.Enum a => a -> a -> [a]
 enumFromThrough x y
     | P.fromEnum x P.<= P.fromEnum y = [x..y]
-    | P.otherwise                    = [x,(P.pred x)..y]`]
+    | P.otherwise                    = [x,(P.pred x)..y]`],
+
+    "allPrimes": [`\
+allPrimes :: P.Integral i => [i]
+allPrimes = 2:3:prs
+    where
+        1:p:candidates = [6 P.* k P.+ r | k <- [0..], r <- [1, 5]]
+        prs            = p : P.filter isPrime candidates
+        isPrime n      = P.all (P.not P.. divides n)
+                                P.$ P.takeWhile (\\p' -> p' P.* p' P.<= n) prs
+        divides n p''  = n \`P.mod\` p'' P.== 0`],
+
+    "isPrime": [`\
+isPrime :: P.Integral i => i -> P.Bool
+isPrime n = n P.> 1 P.&& P.all ((P./= 0) P.. (n \`P.mod\`)) [2..n \`P.div\` 2]`],
+
+    "reflexiveCartesian": [`\
+reflexiveCartesian :: [a] -> [[a]]
+reflexiveCartesian l = [[x, y] | x <- l, y <- l]`],
+
+    "countFromZero": [`\
+countFromZero :: P.Integral i => i -> [i]
+countFromZero n | n P.>= 0    = [0..n]
+                | P.otherwise = [0,-1..n]`],
+
+    "countFromOne": [`\
+countFromOne :: P.Integral i => i -> [i]
+countFromOne n | n P.>= 1    = [1..n]
+               | P.otherwise = [-1,-2..n]`]
 };
 
 /* Ordered by precedence */
