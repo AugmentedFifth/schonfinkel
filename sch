@@ -2,6 +2,15 @@
 
 "use strict";
 
+// TODO: count occurences of item in list
+//       elemIndex
+//       elemIndices
+//       first
+//       second
+//       adjust fixities of built-in infix functions
+//       instance of Read for String
+//       eliminate unnecessary argument vars and Reads
+
 const fs = require("fs");
 
 
@@ -620,6 +629,7 @@ tokens.forEach(l => {
     const matchStack = [];
     let awaitCaseOf = 0;
     let multiwayIfScope = 0;
+    let justHitBrokenPipe = false;
 
     l.forEach(token => {
         l_.push(token);
@@ -667,6 +677,9 @@ tokens.forEach(l => {
                     line += "then ";
                 }
             } else {
+                if (justHitBrokenPipe) {
+                    line += "_ ";
+                }
                 line += "-> ";
             }
         } else if (leftArr.test(token)) {
@@ -725,11 +738,12 @@ tokens.forEach(l => {
             awaitCaseOf++;
         } else if ("⟩" === token) {
             line += ") ";
+            if (awaitCaseOf > matchStack.filter(m => m === "⟨").length) {
+                console.log(1);
+                failWithContext("Incorrect case block syntax.");
+            }
             if (matchStack.pop() !== "⟨") {
                 failWithContext("Mismatched case blocks.");
-            }
-            if (awaitCaseOf > matchStack.filter(m => m === "⟨").length) {
-                failWithContext("Incorrect case block syntax.");
             }
         } else if (comma.test(token)) {
             if (multiwayIfScope > matchStack.length) {
@@ -764,6 +778,7 @@ tokens.forEach(l => {
                 line += "else if ";
             }
         } else if ("¦" === token) {
+            justHitBrokenPipe = true;
             const peek =
                 matchStack.length > 0 ?
                     matchStack[matchStack.length - 1] :
@@ -774,7 +789,12 @@ tokens.forEach(l => {
                     line += "| ";
                     break;
                 case "⟨":
-                    line += "; ";
+                    if (awaitCaseOf >= matchStack.filter(m => m === "⟨").length) {
+                        line += "of ";
+                        awaitCaseOf--;
+                    } else {
+                        line += "; ";
+                    }
                     break;
                 default:
                     failWithContext("Unexpected broken pipe.");
@@ -822,6 +842,10 @@ tokens.forEach(l => {
                     (backtickFlag ? "` " : " ");
             backtickFlag = false;
         }
+
+        if ("¦" !== token) {
+            justHitBrokenPipe = false;
+        }
     });
 
     if (matchStack.length > 0) {
@@ -856,6 +880,7 @@ tokens.forEach(l => {
                 default:
                     split[0] += ") ";
                     if (awaitCaseOf > matchStack.filter(m => m === "⟨").length) {
+                        console.log(2);
                         failWithContext("Incorrect case block syntax.");
                     }
             }
