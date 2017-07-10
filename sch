@@ -2,8 +2,7 @@
 
 "use strict";
 
-// TODO: instance of Read for String
-//       eliminate unnecessary argument vars and Reads
+// TODO: eliminate unnecessary argument vars and Reads
 
 const fs = require("fs");
 
@@ -518,15 +517,16 @@ const imports = {
     "Arr": "import qualified Control.Arrow       as Arr",
     "F":   "import qualified Data.Foldable       as F",
     "L":   "import qualified Data.List           as L",
-    "May": "import qualified Data.Maybe          as May",
     "O":   "import qualified Data.Ord            as O",
-    "C":   "import qualified Data.Char           as C",
     "Fct": "import qualified Data.Functor        as Fct"
 };
 
 let out = "{-# LANGUAGE TupleSections #-}\n\n";
 out += "import qualified Prelude             as P\n\n";
-out += "import qualified System.Environment  as E\n\n";
+out += "import qualified System.Environment  as E\n";
+out += "import qualified Data.Char           as C\n";
+out += "import qualified Data.Maybe          as May\n";
+out += "import qualified Text.Read           as TR\n\n";
 const lineArray = [];
 const calls = new Set();
 const nakeds = [];
@@ -1113,6 +1113,40 @@ const ioCalls =
     ];
 
 out += "\n\n\n";
+out += `\
+tryReadStr :: P.Read a => P.String -> a
+tryReadStr s = case maybeParsed of
+    May.Just x  -> x
+    May.Nothing -> P.read P.$ '"' : esc s P.++ "\\""
+    where
+        dropWhileSpace = P.dropWhile C.isSpace
+        stripped = P.reverse P.. dropWhileSpace P.. P.reverse P.. dropWhileSpace P.$ s
+        isQuoted = P.length stripped P.> 1
+                P.&& P.head stripped P.== '"'
+                P.&& P.last stripped P.== '"'
+        maybeParsed = TR.readMaybe P.$
+            if isQuoted then
+                     '"' : P.takeWhile C.isSpace s
+                P.++ "\\\\"
+                P.++ P.init stripped
+                P.++ "\\\\\\"\\""
+                P.++ P.takeWhile C.isSpace (P.reverse s)
+            else
+                s
+
+        escapes =
+            [ ('"',    "\\\\\\"")
+            , ('\\\\', "\\\\\\\\")
+            , ('\\n',  "\\\\n")
+            , ('\\r',  "\\\\r")
+            , ('\\t',  "\\\\t")
+            , ('\\b',  "\\\\b")
+            , ('\\f',  "\\\\f")
+            , ('\\v',  "\\\\v")
+            , ('\\0',  "\\\\0")
+            ]
+        esc s' = P.concat [May.fromMaybe [ch] (P.lookup ch escapes) | ch <- s']
+\n`;
 out += "main :: P.IO ()\n";
 out += "main = do\n";
 out += "    a <- E.getArgs\n";
@@ -1129,9 +1163,9 @@ nakeds.forEach(n => {
         }
     }
     if (isIo) {
-        out += "    " + n[0] + " a b c d e\n";
+        out += "    " + n[0] + " (tryReadStr a) (tryReadStr b) (tryReadStr c) (tryReadStr d) (tryReadStr e)\n";
     } else {
-        out += "    P.print P.$ " + n[0] + " a b c d e\n";
+        out += "    P.print P.$ " + n[0] + " (tryReadStr a) (tryReadStr b) (tryReadStr c) (tryReadStr d) (tryReadStr e)\n";
     }
 });
 
