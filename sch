@@ -2,8 +2,7 @@
 
 "use strict";
 
-// TODO: adjust fixities of built-in infix functions
-//       instance of Read for String
+// TODO: instance of Read for String
 //       eliminate unnecessary argument vars and Reads
 
 const fs = require("fs");
@@ -206,7 +205,7 @@ const upperIdMappings = {
 
 const definitions = {
     "&!&!&": [`\
-infixl 9 &!&!&
+infixl 5 &!&!&
 (&!&!&) :: P.Eq a => [a] -> [a] -> [[a]]
 (&!&!&) l n =
     P.fst P.$ P.until (\\(_, l') -> P.null l') (\\(accu, rest) ->
@@ -222,7 +221,7 @@ infixl 0 &%&%&
 (&%&%&) x y = x P.&& y`],
 
     "!>^<!": [`\
-infixl 7 !>^<!
+infixl 5 !>^<!
 (!>^<!) :: [a] -> [b] -> [(a, b)]
 (!>^<!) xs ys = [(x, y) | x <- xs, y <- ys]`],
 
@@ -307,6 +306,19 @@ countOccurrences :: (P.Eq a, F.Foldable f, P.Integral i) => a -> f a -> i
 countOccurrences needle haystack =
     F.foldl' (\\count elem ->
         count P.+ if elem P.== needle then 1 else 0) 0 haystack`, "F"]
+};
+
+const fixities = {
+    "`L.findIndices`":  "infixl 8",
+    "`M.mapM`":         "infixl 5",
+    "`L.intersect`":    "infixl 5",
+    "`L.union`":        "infixl 5",
+    "`L.partition`":    "infixl 5",
+    "`F.all`":          "infixl 5",
+    "`F.any`":          "infixl 5",
+    "`L.genericIndex`": "infixl 8",
+    "`P.subtract`":     "infixl 6",
+    "`L.zip`":          "infixl 5"
 };
 
 /* Ordered by precedence */
@@ -1070,11 +1082,19 @@ calls.forEach(call => {
         return;
     }
     const def = definitions[call];
-    if (!def) {
+    if (def) {
+        defined.add(call);
+        out += def[0];
+        out += "\n\n";
+    }
+    const fixity = fixities[call];
+    if (!fixity) {
         return;
     }
     defined.add(call);
-    out += def[0];
+    out += fixity;
+    out += " ";
+    out += call;
     out += "\n\n";
 });
 

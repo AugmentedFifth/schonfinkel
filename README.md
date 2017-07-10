@@ -473,20 +473,20 @@ Infix?: no
 
 Equivalent of `Data.List.findIndices` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 8
 
 ## `⩖`
 
 Splits a list at every occurence of another given list of the same type.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 Haskell implementation of this function:
 
 ```
 import Data.List
 
-infixl 9 ⩖
+infixl 5 ⩖
 (⩖) :: Eq a => [a] -> [a] -> [[a]\]
 (⩖) l n =
     fst $ until (\(_, ll) -> null ll) (\(accu, rest) ->
@@ -501,7 +501,7 @@ infixl 9 ⩖
 
 Equivalent of `Control.Monad.mapM` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 ## `∈`
 
@@ -531,13 +531,13 @@ Infix?: yes
 
 Equivalent of `Data.List.intersect` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 ## `∪`
 
 Equivalent of `Data.List.union` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 ## `Σ`
 
@@ -555,31 +555,31 @@ Infix?: yes
 
 Equivalent of `Data.List.partition` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 ## `∀`
 
 Equivalent of `Data.Foldable.all` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 ## `∃`
 
 Equivalent of `Data.Foldable.any` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 ## `¡`
 
 Equivalent of `Data.List.genericIndex` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 8
 
 ## `Δ`
 
 Equivalent of `Prelude.subtract` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 6
 
 **N.B.:** The ASCII hyphen/minus sign (`-`) cannot be used for subtraction,
 since it only serves to negate numbers (e.g. `-2.5`). Instead, this function
@@ -595,12 +595,12 @@ Infix?: no
 
 Takes the cartesian product of two lists.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 Haskell implementation of this function:
 
 ```haskell
-infixl 7 ×
+infixl 5 ×
 (×) :: [a] -> [b] -> [(a, b)]
 (×) xs ys = [(x, y) | x <- xs, y <- ys]
 ```
@@ -609,7 +609,7 @@ infixl 7 ×
 
 Equivalent of `Data.List.zip` in Haskell.
 
-Infix?: yes
+Infix?: yes; infixl 5
 
 ## `÷`
 
@@ -641,6 +641,10 @@ Equivalent of `Prelude.negate` in Haskell.
 
 Infix?: no
 
+**N.B.:** The ASCII hyphen/minus sign (`-`) cannot be used for subtraction,
+since it only serves to negate numbers (e.g. `-2.5`). Instead, the `Δ` function
+should be used.
+
 ## `.`
 
 Unchanged from Haskell.
@@ -669,7 +673,7 @@ Unchanged from Haskell.
 
 Appends the right argument to the end of the left argument.
 
-Infix?: yes
+Infix?: yes; infixr 5
 
 Haskell implementation of this function:
 
