@@ -648,6 +648,7 @@ tokens.forEach(l => {
     let awaitCaseOf = 0;
     let multiwayIfScope = 0;
     let justHitBrokenPipe = false;
+    const implicitArgs = [];
 
     l.forEach(token => {
         l_.push(token);
@@ -859,6 +860,13 @@ tokens.forEach(l => {
                     token +
                     (backtickFlag ? "` " : " ");
             backtickFlag = false;
+            if (
+                token.length === 1 &&
+                ~"abcde".indexOf(token) &&
+                !~implicitArgs.indexOf(token)
+            ) {
+                implicitArgs.push(token);
+            }
         }
 
         if ("¦" !== token) {
@@ -1039,9 +1047,10 @@ tokens.forEach(l => {
     }
 
     if (naked) {
+        implicitArgs.sort();
         const newId = makeId(nakeds.length);
-        nakeds.push([newId, line]);
-        line = newId + " a b c d e = " + line;
+        nakeds.push([newId, line, implicitArgs]);
+        line = `${newId} ${implicitArgs.join(" ")} = ${line}`;
     }
 
     lineArray.push(line);
@@ -1162,10 +1171,13 @@ nakeds.forEach(n => {
             break;
         }
     }
+
+    const implicitArgList = n[2].map(a => `(tryReadStr ${a})`).join(" ");
+
     if (isIo) {
-        out += "    " + n[0] + " (tryReadStr a) (tryReadStr b) (tryReadStr c) (tryReadStr d) (tryReadStr e)\n";
+        out += `    ${n[0]} ${implicitArgList}\n`;
     } else {
-        out += "    P.print P.$ " + n[0] + " (tryReadStr a) (tryReadStr b) (tryReadStr c) (tryReadStr d) (tryReadStr e)\n";
+        out += `    P.print P.$ ${n[0]} ${implicitArgList}\n`;
     }
 });
 
