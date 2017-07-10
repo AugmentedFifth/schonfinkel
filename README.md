@@ -1075,6 +1075,36 @@ Equivalent of `Data.List.dropWhile` in Haskell.
 
 Mnemonic: **D**rop **W**hile
 
+## `EI`
+
+Equivalent of `Data.List.elemIndex` in Haskell.
+
+Mnemonic: **E**lem **I**ndex
+
+## `EJ`
+
+Equivalent of `Data.List.elemIndices` in Haskell.
+
+Mnemonic: **E**lem **I+1=J**ndices
+
+## `EO`
+
+Counts occurrences of the first argument in the second argument. Second argument
+must be `Foldable`.
+
+Mnemonic: **E**numerate **O**ccurrences
+
+Implementation in Haskell:
+
+```haskell
+import Data.Foldable
+
+EO :: (Eq a, Foldable f, Integral i) => a -> f a -> i
+EO needle haystack =
+    foldl' (\count elem ->
+        count + if elem == needle then 1 else 0) 0 haystack
+```
+
 ## `ER`
 
 Equivalent of `Prelude.error` in Haskell.
@@ -1178,6 +1208,12 @@ Mnemonic: **F**li**P**
 Equivalent of `Data.Foldable.foldr1` in Haskell.
 
 Mnemonic: **F**old **R**ight 1
+
+## `FS`
+
+Equivalent of `Control.Arrow.first` in Haskell.
+
+Mnemonic: **F**ir**S**t
 
 ## `FT`
 
@@ -1460,6 +1496,12 @@ Mnemonic: **R**e**P**eat
 Equivalent of `Control.Monad.return` in Haskell.
 
 Mnemonic: **R**e**T**urn
+
+## `SC`
+
+Equivalent of `Control.Arrow.second` in Haskell.
+
+Mnemonic: **S**e**C**ond
 
 ## `SD`
 

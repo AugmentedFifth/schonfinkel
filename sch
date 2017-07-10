@@ -2,12 +2,7 @@
 
 "use strict";
 
-// TODO: count occurences of item in list
-//       elemIndex
-//       elemIndices
-//       first
-//       second
-//       adjust fixities of built-in infix functions
+// TODO: adjust fixities of built-in infix functions
 //       instance of Read for String
 //       eliminate unnecessary argument vars and Reads
 
@@ -103,6 +98,9 @@ const upperIdMappings = {
     "DR": "L.genericDrop",
     "DW": "L.dropWhile",
     "E":  "F.maximum",
+    "EI": "L.elemIndex",
+    "EJ": "L.elemIndices",
+    "EO": "countOccurrences",
     "ER": "P.error",
     "EV": "P.even",
     "EX": "P.exp",
@@ -117,6 +115,7 @@ const upperIdMappings = {
     "FM": "May.fromMaybe",
     "FP": "P.flip",
     "FR": "F.foldr1",
+    "FS": "Arr.first",
     "FT": "P.fst",
     "G":  "F.minimum",
     "GC": "P.getChar",
@@ -170,6 +169,7 @@ const upperIdMappings = {
     "RP": "L.repeat",
     "RT": "M.return",
     "S":  "L.sort",
+    "SC": "Arr.second",
     "SD": "P.snd",
     "SI": "P.sin",
     "SL": "L.scanl1",
@@ -300,7 +300,13 @@ countFromZero n | n P.>= 0    = [0..n]
     "countFromOne": [`\
 countFromOne :: P.Integral i => i -> [i]
 countFromOne n | n P.>= 1    = [1..n]
-               | P.otherwise = [-1,-2..n]`]
+               | P.otherwise = [-1,-2..n]`],
+
+    "countOccurrences": [`\
+countOccurrences :: (P.Eq a, F.Foldable f, P.Integral i) => a -> f a -> i
+countOccurrences needle haystack =
+    F.foldl' (\\count elem ->
+        count P.+ if elem P.== needle then 1 else 0) 0 haystack`, "F"]
 };
 
 /* Ordered by precedence */
